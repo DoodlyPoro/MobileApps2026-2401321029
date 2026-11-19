@@ -2,6 +2,7 @@ package com.example.booktracker.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.booktracker.utils.Validatable
@@ -28,6 +29,7 @@ data class Book (
     val notes: String,
     val categoryId: Long?
 ) : Validatable {
+    @Ignore
     override val validationErrors: MutableList<String> = mutableListOf()
 
     override fun validate(): Boolean {

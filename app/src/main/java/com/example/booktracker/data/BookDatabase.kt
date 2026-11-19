@@ -33,15 +33,15 @@ abstract class BookDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: BookDatabase? = null
         val PRESET_CATEGORIES = listOf(
-            "Фантастика", "Романтика", "Научна", "Трилър", "Класика",
-            "Фентэзи", "История", "Биография", "Мотивация", "Психология",
-            "Поезия", "Хорър", "Приключения", "Изкуство", "Технологии",
-            "Философия", "Детектив", "Икономика", "Детски", "Други"
+            "Fantasy", "Romance", "Sci-fi", "Thriller", "Classical",
+            "History", "Biography", "Motivational", "Psychology",
+            "Horror", "Adventure", "Art", "Technology",
+            "Philosophy", "Detective fiction", "Economy", "Children", "Other"
         )
 
         fun getInstance(context: Context): BookDatabase =
             INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
+                INSTANCE ?: Room.databaseBuilder (
                     context.applicationContext,
                     BookDatabase::class.java,
                     "books.db"

@@ -16,17 +16,15 @@ interface BookDao {
     @Transaction
     @Query(
         """
-        SELECT * FROM books
-        WHERE (:title IS NULL OR title LIKE '%' || :title || '%')
-          AND (:author IS NULL OR author LIKE '%' || :author || '%')
-          AND (:status IS NULL OR status = :status)
-          AND (:catCount = 0 OR categoryId IN (:categoryIds))
-        ORDER BY title COLLATE NOCASE
-        """
+    SELECT * FROM books
+    WHERE (:query IS NULL OR title LIKE '%' || :query || '%' OR author LIKE '%' || :query || '%')
+      AND (:status IS NULL OR status = :status)
+      AND (:catCount = 0 OR categoryId IN (:categoryIds))
+    ORDER BY title COLLATE NOCASE
+    """
     )
     fun filter(
-        title: String?,
-        author: String?,
+        query: String?,
         status: String?,
         categoryIds: List<Long>,
         catCount: Int

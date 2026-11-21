@@ -17,9 +17,9 @@ class BookRepository (
 
     fun search(filter: BookFilter): LiveData<List<BookWithCategory>> {
         val ids = filter.categoryIds.ifEmpty { listOf(NO_CATEGORY_ID) }
+        val searchQuery = filter.title.blankToNull() ?: filter.author.blankToNull()
         return bookDao.filter(
-            title = filter.title.blankToNull(),
-            author = filter.author.blankToNull(),
+            query = searchQuery,
             status = filter.status.blankToNull(),
             categoryIds = ids,
             catCount = filter.categoryIds.size

@@ -30,6 +30,8 @@ class BookRepository (
 
     suspend fun update(book: Book) = bookDao.update(book)
 
+    suspend fun delete(book: Book) = bookDao.delete(book)
+
     private fun String?.blankToNull(): String? = this?.trim()?.ifBlank { null }
     private companion object {
         const val NO_CATEGORY_ID = -1L

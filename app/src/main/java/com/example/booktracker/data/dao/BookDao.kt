@@ -2,6 +2,7 @@ package com.example.booktracker.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -36,4 +37,7 @@ interface BookDao {
 
     @Update
     suspend fun update(book: Book)
+
+    @Delete
+    suspend fun delete(book: Book)
 }

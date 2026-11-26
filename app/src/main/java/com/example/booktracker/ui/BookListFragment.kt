@@ -19,6 +19,8 @@ import com.example.booktracker.data.entity.Category
 import com.example.booktracker.data.repository.BookRepository
 import com.example.booktracker.viewmodel.BookViewModel
 import com.google.android.material.textfield.TextInputEditText
+import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 
 class BookListFragment : Fragment() {
     private lateinit var viewModel: BookViewModel
@@ -44,9 +46,23 @@ class BookListFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewBooks)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        bookAdapter = BookAdapter(emptyList()) { bookWithCategory ->
-            viewModel.selectBook(bookWithCategory.book)
-        }
+        bookAdapter = BookAdapter(
+            bookItems = emptyList(),
+            onBookClick = { bookWithCategory ->
+                viewModel.selectBook(bookWithCategory.book)
+            },
+            onDeleteClick = { bookWithCategory ->
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Book")
+                    .setMessage("Are you sure you want to delete \"${bookWithCategory.book.title}\"?")
+                    .setPositiveButton("Delete") { _, _ ->
+                        viewModel.delete(bookWithCategory.book)
+                        Toast.makeText(requireContext(), "Book deleted", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+        )
         recyclerView.adapter = bookAdapter
 
         val database = BookDatabase.getInstance(requireContext())

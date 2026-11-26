@@ -49,6 +49,15 @@ class BookViewModel (private  val repository: BookRepository) : ViewModel() {
         viewModelScope.launch { repository.insert(book) }
     }
 
+    fun delete(book: Book) {
+        viewModelScope.launch {
+            repository.delete(book)
+            if (_selectedBook.value?.id == book.id) {
+                _selectedBook.value = null
+            }
+        }
+    }
+
     class Factory(private val repository: BookRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>) : T {
             if (modelClass.isAssignableFrom(BookViewModel::class.java)) {

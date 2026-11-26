@@ -24,6 +24,7 @@ class InsertBookFragment : Fragment() {
     private lateinit var viewModel: BookViewModel
     private var categoriesList: List<Category> = emptyList()
     private val statuses = listOf("To Read", "Reading", "Completed")
+    private var editingBook: Book? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,14 +45,13 @@ class InsertBookFragment : Fragment() {
         val etNotes = view.findViewById<TextInputEditText>(R.id.etNotes)
         val tvValidationErrors = view.findViewById<TextView>(R.id.tvValidationErrors)
         val btnSaveBook = view.findViewById<Button>(R.id.btnSaveBook)
+        val btnCancelEdit = view.findViewById<Button>(R.id.btnCancelEdit)
 
-        // Споделен ViewModel на ниво Activity, за да вижда BookListFragment промените веднага
         val database = BookDatabase.getInstance(requireContext())
         val repository = BookRepository(database.bookDao(), database.categoryDao())
         val factory = BookViewModel.Factory(repository)
         viewModel = ViewModelProvider(requireActivity(), factory)[BookViewModel::class.java]
 
-        // Spinner за статус
         val statusAdapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
@@ -61,7 +61,29 @@ class InsertBookFragment : Fragment() {
         }
         spinnerStatus.adapter = statusAdapter
 
-        // Spinner за категории от базата
+        fun clearFormAndResetMode() {
+            editingBook = null
+            viewModel.clearSelection()
+            etTitle.text?.clear()
+            etAuthor.text?.clear()
+            etRating.text?.clear()
+            etNotes.text?.clear()
+            tvValidationErrors.visibility = View.GONE
+            tvValidationErrors.text = ""
+            spinnerStatus.setSelection(0)
+            if (spinnerCategory.adapter != null && spinnerCategory.adapter.count > 0) {
+                spinnerCategory.setSelection(0)
+            }
+            btnSaveBook.text = "Save Book"
+            btnCancelEdit.visibility = View.GONE
+        }
+
+        fun applyCategorySelection(categoryId: Long?) {
+            if (categoriesList.isEmpty()) return
+            val index = categoriesList.indexOfFirst { it.id == categoryId }
+            spinnerCategory.setSelection(if (index >= 0) index else 0)
+        }
+
         viewModel.categories.observe(viewLifecycleOwner) { categories ->
             categoriesList = categories
             val names = categories.map { it.name }
@@ -73,6 +95,35 @@ class InsertBookFragment : Fragment() {
                 setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             }
             spinnerCategory.adapter = categoryAdapter
+            editingBook?.let { applyCategorySelection(it.categoryId) }
+        }
+
+        viewModel.selectedBook.observe(viewLifecycleOwner) { book ->
+            editingBook = book
+            tvValidationErrors.visibility = View.GONE
+            tvValidationErrors.text = ""
+
+            if (book == null) {
+                btnSaveBook.text = "Save Book"
+                btnCancelEdit.visibility = View.GONE
+                return@observe
+            }
+
+            etTitle.setText(book.title)
+            etAuthor.setText(book.author)
+            etRating.setText(book.rating.toString())
+            etNotes.setText(book.notes)
+
+            val statusIndex = statuses.indexOf(book.status)
+            spinnerStatus.setSelection(if (statusIndex >= 0) statusIndex else 0)
+            applyCategorySelection(book.categoryId)
+
+            btnSaveBook.text = "Update Book"
+            btnCancelEdit.visibility = View.VISIBLE
+        }
+
+        btnCancelEdit.setOnClickListener {
+            clearFormAndResetMode()
         }
 
         btnSaveBook.setOnClickListener {
@@ -85,35 +136,44 @@ class InsertBookFragment : Fragment() {
             val rating = etRating.text?.toString()?.trim()?.toIntOrNull() ?: 0
             val notes = etNotes.text?.toString()?.trim().orEmpty()
             val selectedCategoryId = categoriesList.getOrNull(spinnerCategory.selectedItemPosition)?.id
+                ?: editingBook?.categoryId
 
-            val newBook = Book(
-                title = title,
-                author = author,
-                status = status,
-                rating = rating,
-                notes = notes,
-                categoryId = selectedCategoryId
-            )
+            val currentEditing = editingBook
+            val targetBook = if (currentEditing != null) {
+                currentEditing.copy(
+                    title = title,
+                    author = author,
+                    status = status,
+                    rating = rating,
+                    notes = notes,
+                    categoryId = selectedCategoryId
+                )
+            } else {
+                Book(
+                    title = title,
+                    author = author,
+                    status = status,
+                    rating = rating,
+                    notes = notes,
+                    categoryId = selectedCategoryId
+                )
+            }
 
-            // Използваме вградената Validatable валидация на Book
-            if (!newBook.validate()) {
-                tvValidationErrors.text = newBook.validationErrors.joinToString("\n")
+            if (!targetBook.validate()) {
+                tvValidationErrors.text = targetBook.validationErrors.joinToString("\n")
                 tvValidationErrors.visibility = View.VISIBLE
                 return@setOnClickListener
             }
 
-            viewModel.insert(newBook)
-
-            // Изчистване на формата след успешен запис
-            etTitle.text?.clear()
-            etAuthor.text?.clear()
-            etRating.text?.clear()
-            etNotes.text?.clear()
-            spinnerStatus.setSelection(0)
-            if (spinnerCategory.adapter != null && spinnerCategory.adapter.count > 0) {
-                spinnerCategory.setSelection(0)
+            if (currentEditing != null) {
+                viewModel.update(targetBook)
+                clearFormAndResetMode()
+                Toast.makeText(requireContext(), "Book updated!", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.insert(targetBook)
+                clearFormAndResetMode()
+                Toast.makeText(requireContext(), "Book saved!", Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(requireContext(), "Book saved!", Toast.LENGTH_SHORT).show()
         }
     }
 }

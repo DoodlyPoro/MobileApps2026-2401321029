@@ -44,8 +44,8 @@ class BookListFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewBooks)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        bookAdapter = BookAdapter(emptyList()) { _ ->
-            // Book item clicked
+        bookAdapter = BookAdapter(emptyList()) { bookWithCategory ->
+            viewModel.selectBook(bookWithCategory.book)
         }
         recyclerView.adapter = bookAdapter
 
@@ -68,7 +68,6 @@ class BookListFragment : Fragment() {
             spinnerFilterCategory.adapter = adapter
         }
 
-        // Търсене по заглавие в реално време
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
@@ -81,7 +80,6 @@ class BookListFragment : Fragment() {
             }
         })
 
-        // Филтриране по избрана категория
         spinnerFilterCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -104,7 +102,6 @@ class BookListFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
 
-        // Наблюдаване на филтрираните резултати
         viewModel.searchResults.observe(viewLifecycleOwner) { books ->
             books?.let {
                 bookAdapter.updateBooks(it)

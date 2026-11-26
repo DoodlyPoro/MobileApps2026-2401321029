@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.booktracker.data.entity.Book
 import com.example.booktracker.data.entity.BookWithCategory
+import androidx.room.Update
 
 @Dao
 interface BookDao {
@@ -32,4 +33,7 @@ interface BookDao {
 
     @Query("SELECT COUNT(*) FROM books")
     fun count(): LiveData<Int>
+
+    @Update
+    suspend fun update(book: Book)
 }

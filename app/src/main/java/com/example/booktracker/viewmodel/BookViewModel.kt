@@ -21,6 +21,24 @@ class BookViewModel (private  val repository: BookRepository) : ViewModel() {
     val searchResults: LiveData<List<BookWithCategory>> =
         filter.switchMap { repository.search(it) }
 
+    private val _selectedBook = MutableLiveData<Book?>(null)
+    val selectedBook: LiveData<Book?> = _selectedBook
+
+    fun selectBook(book: Book?) {
+        _selectedBook.value = book
+    }
+
+    fun clearSelection() {
+        _selectedBook.value = null
+    }
+
+    fun update(book: Book) {
+        viewModelScope.launch {
+            repository.update(book)
+            _selectedBook.value = null
+        }
+    }
+
     fun setFilter(newFilter: BookFilter) {
         filter.value = newFilter
     }

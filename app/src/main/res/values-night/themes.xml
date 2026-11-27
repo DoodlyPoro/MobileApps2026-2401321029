@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BookTracker" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#C5BFFF</item>
+        <item name="colorOnPrimary">#2B1E78</item>
+        <item name="colorSecondary">#B8C4FF</item>
+        <item name="colorOnSecondary">#1E2C61</item>
+        <item name="android:windowBackground">#121318</item>
+    </style>
+</resources>

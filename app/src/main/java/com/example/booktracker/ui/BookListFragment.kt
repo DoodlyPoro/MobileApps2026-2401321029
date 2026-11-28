@@ -1,5 +1,6 @@
 package com.example.booktracker.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -61,6 +62,27 @@ class BookListFragment : Fragment() {
                     }
                     .setNegativeButton("Cancel", null)
                     .show()
+            },
+            onShareClick = { bookWithCategory ->
+                val book = bookWithCategory.book
+                val categoryName = bookWithCategory.category?.name ?: "Uncategorized"
+                val shareText = buildString {
+                    appendLine("Book: ${book.title}")
+                    appendLine("Author: ${book.author}")
+                    appendLine("Category: $categoryName")
+                    appendLine("Status: ${book.status}")
+                    appendLine("Rating: ${book.rating}/10")
+                    if (book.notes.isNotBlank()) {
+                        appendLine("Notes: ${book.notes}")
+                    }
+                }.trim()
+
+                val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_SUBJECT, "Book: ${book.title}")
+                    putExtra(Intent.EXTRA_TEXT, shareText)
+                }
+                startActivity(Intent.createChooser(sendIntent, "Share book via"))
             }
         )
         recyclerView.adapter = bookAdapter

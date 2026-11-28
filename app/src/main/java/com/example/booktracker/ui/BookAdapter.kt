@@ -12,7 +12,8 @@ import com.example.booktracker.data.entity.BookWithCategory
 class BookAdapter(
     private var bookItems: List<BookWithCategory>,
     private val onBookClick: (BookWithCategory) -> Unit,
-    private val onDeleteClick: (BookWithCategory) -> Unit
+    private val onDeleteClick: (BookWithCategory) -> Unit,
+    private val onShareClick: (BookWithCategory) -> Unit
 ) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     class BookViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -20,6 +21,7 @@ class BookAdapter(
         val authorTextView: TextView = itemView.findViewById(R.id.textAuthor)
         val statusTextView: TextView = itemView.findViewById(R.id.textStatus)
         val ratingTextView: TextView = itemView.findViewById(R.id.textRating)
+        val shareButton: ImageButton = itemView.findViewById(R.id.btnShareBook)
         val deleteButton: ImageButton = itemView.findViewById(R.id.btnDeleteBook)
     }
 
@@ -39,6 +41,10 @@ class BookAdapter(
 
         holder.itemView.setOnClickListener {
             onBookClick(item)
+        }
+
+        holder.shareButton.setOnClickListener {
+            onShareClick(item)
         }
 
         holder.deleteButton.setOnClickListener {

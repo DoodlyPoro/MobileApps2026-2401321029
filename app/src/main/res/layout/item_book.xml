@@ -25,30 +25,34 @@
             app:layout_constraintEnd_toStartOf="@+id/textRating"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="The Lord of the Rings" />
+            tools:text="'Yellow Kid' Weil" />
 
         <TextView
             android:id="@+id/textAuthor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@android:color/darker_gray"
+            android:layout_marginEnd="8dp"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/textRating"
+            app:layout_constraintEnd_toStartOf="@+id/btnShareBook"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textTitle"
-            tools:text="J. R. R. Tolkien" />
+            tools:text="Joseph Weil" />
 
         <TextView
             android:id="@+id/textStatus"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:textSize="12sp"
             android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnShareBook"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textAuthor"
-            tools:text="Status: Reading" />
+            tools:text="Status: To Read" />
 
         <TextView
             android:id="@+id/textRating"
@@ -58,7 +62,19 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="★ 9/10" />
+            tools:text="★ 5/10" />
+
+        <ImageButton
+            android:id="@+id/btnShareBook"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Share book"
+            android:src="@android:drawable/ic_menu_share"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnDeleteBook"
+            app:tint="?attr/colorPrimary" />
 
         <ImageButton
             android:id="@+id/btnDeleteBook"
